@@ -9,9 +9,9 @@ $stackPointer=0;//указатель установлен на дно стека
 foreach ($tokens as $key=>$value){
     array_push($stack, $value);
     $stackPointer++;
-    
-}
 
+}
+//sdfsdfsdfgsdfg
 print_r($tokens);
 echo ("<br>-------------------------------<br>");
 print_r($stack);
