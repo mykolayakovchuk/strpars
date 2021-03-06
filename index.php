@@ -1,8 +1,8 @@
 <?php
 
 //Строка после разбиения на токены
-//$tokens=["a","<","b",":","с",">","d","e"];
-$tokens=["d","e", ["f", "g"], ["h", "i"], "j"];
+$tokens=["a","<","b",":","с",">","d","e"];
+//$tokens=["d","e", ["f", "g"], ["h", "i"], "j"];
 echo  (count($tokens));
 //функция анализа верхушки стека
 function stackProduce($array){
@@ -10,10 +10,10 @@ function stackProduce($array){
     switch ($array[$stackPointer]) {
         case "<":
         case ":":
-            //echo ":< detected<br>";
             break;
         case ">":
-            //echo "> detected<br>";
+            //функция произведения выражения < : >
+            orProd($array);
             break;
         default:
             if ($array[$stackPointer-1]!="<" &&
@@ -43,8 +43,8 @@ function concat ($element1, $element2){
                         }
                     }
                     return $resultArray;
-                    
                     break;
+
                 case false://первый массив, второй не массив(10)
                     $resultArray=[];
                     foreach($element1 as $value){
@@ -63,26 +63,48 @@ function concat ($element1, $element2){
                     }
                     return $resultArray;
                     break;
+
                 case false: // (00)
                     return $element1." ".$element2;
                     break;
             }
         }
-
     }
-   
+}
+
+//функция произведения выражения < : >
+function orProd($array){
+    echo ("<br>-----onprod:--------------------<br>");
+    $stackPointer=count($array)-1;
+    echo ("<br>-----onprod:---stackPointer:".$stackPointer."-----------------<br>");
+    $startPointer=$stackPointer;
+    do {
+        switch ($array[$startPointer]){
+            case "<":
+                echo ("<br>stack[".$startPointer."] ------ "."ELEMENT:".$array[$startPointer]."---");
+                $startPointer--;
+                
+                print_r($array);
+            default:
+                echo ("<br>stack[".$startPointer."] ------ "."ELEMENT:".$array[$startPointer]."---");
+                $startPointer--;
+                
+                print_r($array);
+        }
+    }while ($array[$startPointer]!="<");
+
 }
 
 //наполнение и работа со стеком
 $stack=["stackBottom"];
 $stackPointer=0;//указатель установлен на дно стека
 foreach ($tokens as $key=>$value){
-    echo ("<br>---0---------------------------<br>");
-    print_r($stack);
+    //echo ("<br>---0---------------------------<br>");
+    //print_r($stack);
     array_push($stack, $value);
     $stack=stackProduce($stack);
-    echo ("<br>----1--------------------------<br>");
-    print_r($stack);
+    //echo ("<br>----1--------------------------<br>");
+    //print_r($stack);
     
 }
 //sdfsdfsdfgsdfg
