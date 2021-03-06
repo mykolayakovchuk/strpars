@@ -74,25 +74,26 @@ function concat ($element1, $element2){
 
 //функция произведения выражения < : >
 function orProd($array){
-    echo ("<br>-----onprod:--------------------<br>");
-    $stackPointer=count($array)-1;
-    echo ("<br>-----onprod:---stackPointer:".$stackPointer."-----------------<br>");
-    $startPointer=$stackPointer;
-    do {
-        switch ($array[$startPointer]){
-            case "<":
-                echo ("<br>stack[".$startPointer."] ------ "."ELEMENT:".$array[$startPointer]."---");
-                $startPointer--;
-                
+    array_pop($array);
+    while ($array[count($array)-2]!="<") {
+        $stackPointer=count($array)-1;
+        switch ($array[$stackPointer-1]){
+            case ":":
+                             
+                echo ("<br>stack[".$stackPointer."] ------ "."ELEMENT:".$array[$stackPointer]."---");
+                array_pop($array);
                 print_r($array);
+                break;
             default:
-                echo ("<br>stack[".$startPointer."] ------ "."ELEMENT:".$array[$startPointer]."---");
-                $startPointer--;
-                
+                echo ("<br>stack[".$stackPointer."] ------ "."ELEMENT:".$array[$stackPointer]."---");
+                $array[$stackPointer-1]=concat ($array[$stackPointer-1] , $array[$stackPointer]);
+                array_pop($array);
                 print_r($array);
+                break;
         }
-    }while ($array[$startPointer]!="<");
-
+    }
+    echo ("<br>");
+    print_r($array);
 }
 
 //наполнение и работа со стеком
