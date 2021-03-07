@@ -1,11 +1,43 @@
 <?php
 //входные данные
-$inputString="aaa<bbb:ccc<ddd:eee:fff>>ggg";
+$inputString="aaa<bbb:ccc<ddd::eee:fff>>ggg";
 //разбиение строки на токены
 $inputArray=str_split ($inputString);
 
-//!!!!!!!Проверка строки на правильность
+//Проверка строки на правильность
+function inputValidation ($array, $string){
+    $counterParenthesis=0;
+    foreach($array as $value){
+        switch ($value){
+            case "<":
+                $counterParenthesis++;
+                break;
+            case ">":
+                $counterParenthesis--;
+                break;
+            default:
+                break;
+        }
+        if ($counterParenthesis<0) {
+            throw new Exception('Error in input string. (check /< or />)');
+        }
+    }
+    if ($counterParenthesis>0) {
+        throw new Exception('Error in input string. (check quantities < or >)');
+    }
+    //дополнительная проверка входящей строки на корректность
+    if(preg_match('/<:|<>|:>|::/', $string) == 1){
+        throw new Exception('Error in input string. (one of [<:, <>, :>, ::] DETECTED)');
+    }
+}
+try {
+    inputValidation ($inputArray, $inputString);
+} catch (Exception $e) {
+    echo 'ERROR: ',  $e->getMessage(), "\n";
+    exit;
+}
 
+//разбиение строки на токены
 $tokens=[];
 $currentToken="";
 foreach ($inputArray as $key=>$value){
