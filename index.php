@@ -1,10 +1,38 @@
 <?php
+//входные данные
+$inputString="aaa<bbb:ccc<ddd:eee:fff>>ggg";
+//разбиение строки на токены
+$inputArray=str_split ($inputString);
 
-//Строка после разбиения на токены
+//!!!!!!!Проверка строки на правильность
+
+$tokens=[];
+$currentToken="";
+foreach ($inputArray as $key=>$value){
+    switch ($value){
+        case "<":
+        case ":":
+        case ">":
+            if($currentToken!=""){
+                array_push($tokens, $currentToken);
+            }
+            array_push($tokens, $value);
+            $currentToken="";
+            break;
+        default:
+            $currentToken=$currentToken.$value;
+            if ($key == count($inputArray)-1){
+                array_push($tokens, $currentToken);
+            }
+            break;
+    }
+}
+
+//Строка после разбиения на токены имеет вид:
 //$tokens=["<","a",":","b",":","с",":","d",">","e"];
-$tokens=["a","<","b",":","с","<","d",":","e",">",">","f","<","g",":","h",":","i",">" ];
+//$tokens=["a","<","b",":","с","<","d",":","e",">",">","f","<","g",":","h",":","i",">" ];
 //$tokens=["d","e", ["f", "g"], ["h", "i"], "j"];
-echo  (count($tokens));
+
 //функция анализа верхушки стека
 function stackProduce($array){
     $stackPointer=count($array)-1;
@@ -137,19 +165,13 @@ function orProdСolon($element1, /*:*/$element2){
 $stack=["stackBottom"];
 $stackPointer=0;//указатель установлен на дно стека
 foreach ($tokens as $key=>$value){
-    //echo ("<br>---0---------------------------<br>");
-    //print_r($stack);
     array_push($stack, $value);
     $stack=stackProduce($stack);
-    //echo ("<br>----1--------------------------<br>");
-    //print_r($stack);
-    
 }
-//sdfsdfsdfgsdfg
+
+//проработанный стек нормализуется до двух элементов (дно стека и массив результатов)
 echo ("<br>-----tokens:--------------------<br>");
 print_r($tokens);
-
 echo ("<br>-----stack:--------------------<br>");
 print_r($stack);
-
 ?>
