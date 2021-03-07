@@ -1,8 +1,8 @@
 <?php
 
 //Строка после разбиения на токены
-$tokens=["<","a",":","b",":","с",":","d",">","e"];
-//$tokens=["a","<","b",":","с","<","d",":","e",">",">","f" ];
+//$tokens=["<","a",":","b",":","с",":","d",">","e"];
+$tokens=["a","<","b",":","с","<","d",":","e",">",">","f","<","g",":","h",":","i",">" ];
 //$tokens=["d","e", ["f", "g"], ["h", "i"], "j"];
 echo  (count($tokens));
 //функция анализа верхушки стека
@@ -79,8 +79,6 @@ function concat ($element1, $element2){
 function orProd($array){
     array_pop($array);
     while ($array[count($array)-2]!="<") {
-        echo"<br>BEFORE:";
-        print_r($array);
         $stackPointer=count($array)-1;
         switch ($array[$stackPointer-1]){
             case ":":
@@ -94,8 +92,6 @@ function orProd($array){
                 array_pop($array);
                 break;
         }
-        echo"<br>AFTER:";
-        print_r($array);
     }
     return $array;
 }
