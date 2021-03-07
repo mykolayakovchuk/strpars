@@ -1,7 +1,8 @@
 <?php
 
 //Строка после разбиения на токены
-$tokens=["a","<","b",":","с",">","d","e"];
+$tokens=["<","a",":","b",":","с",":","d",">","e"];
+//$tokens=["a","<","b",":","с","<","d",":","e",">",">","f" ];
 //$tokens=["d","e", ["f", "g"], ["h", "i"], "j"];
 echo  (count($tokens));
 //функция анализа верхушки стека
@@ -13,7 +14,9 @@ function stackProduce($array){
             break;
         case ">":
             //функция произведения выражения < : >
-            orProd($array);
+            $array=orProd($array);
+            $array[count($array)-2]=$array[count($array)-1];
+            array_pop($array);
             break;
         default:
             if ($array[$stackPointer-1]!="<" &&
@@ -76,24 +79,62 @@ function concat ($element1, $element2){
 function orProd($array){
     array_pop($array);
     while ($array[count($array)-2]!="<") {
+        echo"<br>BEFORE:";
+        print_r($array);
         $stackPointer=count($array)-1;
         switch ($array[$stackPointer-1]){
             case ":":
-                             
-                echo ("<br>stack[".$stackPointer."] ------ "."ELEMENT:".$array[$stackPointer]."---");
+                $array[$stackPointer-2]=orProdСolon ($array[$stackPointer-2], $array[$stackPointer]);             
                 array_pop($array);
-                print_r($array);
+                array_pop($array);
+
                 break;
             default:
-                echo ("<br>stack[".$stackPointer."] ------ "."ELEMENT:".$array[$stackPointer]."---");
                 $array[$stackPointer-1]=concat ($array[$stackPointer-1] , $array[$stackPointer]);
                 array_pop($array);
-                print_r($array);
                 break;
         }
+        echo"<br>AFTER:";
+        print_r($array);
     }
-    echo ("<br>");
-    print_r($array);
+    return $array;
+}
+
+////функция произведения выражения  ":" (подфункция функции orProd()) 
+function orProdСolon($element1, /*:*/$element2){
+    switch (is_array($element1)){
+        case true:{
+            switch (is_array($element2)){
+                case true://оба элемента массивы (11)
+                    $resultArray=$element1;
+                    foreach($element2 as $value){
+                        array_push($resultArray, $value);
+                    }
+                    return $resultArray;
+                    break;
+
+                case false://первый массив, второй не массив(10)
+                    $resultArray=$element1;
+                    array_push($resultArray, $element2);
+                    return $resultArray;
+                    break;
+            }
+        }
+        case false:{
+            switch (is_array($element2)){
+                case true:// (01)
+                    $resultArray=$element2;
+                    array_unshift($resultArray, $element1);
+                    return $resultArray;
+                    break;
+
+                case false: // (00)
+                    return array($element1, $element2);
+                    break;
+            }
+        }
+    }    
+
 }
 
 //наполнение и работа со стеком
