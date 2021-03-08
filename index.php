@@ -1,6 +1,9 @@
 <?php
 //входные данные
 $inputString="aaaa<bbbb::cccc<dddd::eeee::ffff>>gggg";
+//ВЫВОД ИСХОДНЫХ ДАННЫХ НА ЭКРАН
+echo ("<br>-----ВХОД:--------------------<br>");
+echo htmlspecialchars($inputString);
 //разбиение строки на токены
 $inputArray=str_split ($inputString);
 
@@ -210,21 +213,36 @@ foreach ($tokens as $key=>$value){
     $stack=stackProduce($stack);
 }
 
-echo ("<br>-----tokens:--------------------<br>");
-print_r($tokens);
-echo ("<br>-----stack:--------------------<br>");
-print_r($stack);
-
 //после первого прохода в стеке остались только строки и массивы строк, которые нужно объединить, т.е.
 //проработанный стек нормализуется до двух элементов (дно стека и массив результатов)
-
-echo ("<br>-----stack (нормализованный):--------------------<br>");
-
 while(count($stack) > 2){
     $stackPointer=count($stack)-1;
     $stack[$stackPointer-1]= concat($stack[$stackPointer-1], $stack[$stackPointer]);
     array_pop($stack);
 }
+//ВЫВОД РЕЗУЛЬТАТОВ НА ЭКРАН
+echo ("<br>-----ВЫХОД:--------------------<br>");
+foreach($stack[1] as $value){
+    echo "<br><p>".$value."<p>";
+}
 
-print_r($stack);
+// передача результатов в Базу Данных
+$servername = "localhost";
+$username = "root";
+$password = "root";
+// Create connection
+$conn = mysqli_connect($servername, $username, $password);
+// Check connection
+if (!$conn) {
+  die("Connection failed: " . mysqli_connect_error());
+}
+mysqli_select_db($conn, "strpars");
+$rowsTable=(mysqli_query($conn, '  SELECT * FROM result'));
+if ($rowsTable->num_rows !== 0){
+    mysqli_query($conn, 'TRUNCATE TABLE result');
+}
+foreach ($stack[1] as $variant){
+    $query_string='  INSERT INTO result (id, variants) VALUES (NULL, "'.$variant.'")';
+    mysqli_query($conn, $query_string);
+}
 ?>
