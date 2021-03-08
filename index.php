@@ -1,6 +1,6 @@
 <?php
 //входные данные
-$inputString="aaa<bbb:ccc<ddd::eee:fff>>ggg";
+$inputString="a<b::c<d:::e:::f>>g";
 //разбиение строки на токены
 $inputArray=str_split ($inputString);
 
@@ -26,7 +26,7 @@ function inputValidation ($array, $string){
         throw new Exception('Error in input string. (check quantities < or >)');
     }
     //дополнительная проверка входящей строки на корректность
-    if(preg_match('/<:|<>|:>|::/', $string) == 1){
+    if(preg_match('/<::|<>|::>|::::/', $string) == 1){
         throw new Exception('Error in input string. (one of [<:, <>, :>, ::] DETECTED)');
     }
 }
@@ -36,6 +36,27 @@ try {
     echo 'ERROR: ',  $e->getMessage(), "\n";
     exit;
 }
+
+//для упрощения разбора произведем предварительную замену символов :: на : 
+echo ("<br>");
+print_r ($inputArray);
+
+foreach ($inputArray as $key=>&$value){
+    if ($value == ":" && $inputArray[$key+1] == ":" && $inputArray[$key+2] == ":"){
+        $inputArray[$key-1]=$inputArray[$key-1].":";
+        array_splice($inputArray, $key, 1);
+    } elseif ($value == ":" && $inputArray[$key+1] == ":" && $inputArray[$key+2] != ":") {
+        array_splice($inputArray, $key+1, 1);
+    }elseif ($value == ":" && $inputArray[$key+1] != ":" && $inputArray[$key-1] != ":") {
+        $inputArray[$key-1]=$inputArray[$key-1].":";
+        array_splice($inputArray, $key, 1);
+    } else {
+        continue;
+    }
+}
+unset($value);
+echo ("<br>");
+print_r ($inputArray);
 
 //разбиение строки на токены
 $tokens=[];
@@ -185,20 +206,22 @@ function orProdСolon($element1, /*:*/$element2){
             }
         }
     }    
-
 }
 
 //наполнение и работа со стеком
-$stack=["stackBottom"];
-$stackPointer=0;//указатель установлен на дно стека
+$stack=["stackBottom"];//указатель на дно стека
 foreach ($tokens as $key=>$value){
     array_push($stack, $value);
     $stack=stackProduce($stack);
 }
-
-//проработанный стек нормализуется до двух элементов (дно стека и массив результатов)
 echo ("<br>-----tokens:--------------------<br>");
 print_r($tokens);
 echo ("<br>-----stack:--------------------<br>");
+print_r($stack);
+
+
+//проработанный стек нормализуется до двух элементов (дно стека и массив результатов)
+
+echo ("<br>-----stack (нормализованный):--------------------<br>");
 print_r($stack);
 ?>
