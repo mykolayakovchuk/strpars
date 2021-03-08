@@ -1,6 +1,6 @@
 <?php
 //входные данные
-$inputString="a<b::c<d:::e:::f>>g";
+$inputString="a<b:c<d::e::f>>g";
 //разбиение строки на токены
 $inputArray=str_split ($inputString);
 
@@ -27,7 +27,7 @@ function inputValidation ($array, $string){
     }
     //дополнительная проверка входящей строки на корректность
     if(preg_match('/<::|<>|::>|::::/', $string) == 1){
-        throw new Exception('Error in input string. (one of [<:, <>, :>, ::] DETECTED)');
+        throw new Exception('Error in input string. (one of [<::, <>, ::>, :::] DETECTED)');
     }
 }
 try {
@@ -44,7 +44,7 @@ print_r ($inputArray);
 foreach ($inputArray as $key=>&$value){
     if ($value == ":" && $inputArray[$key+1] == ":" && $inputArray[$key+2] == ":"){
         $inputArray[$key-1]=$inputArray[$key-1].":";
-        array_splice($inputArray, $key, 1);
+        array_splice($inputArray, $key+1, 2);
     } elseif ($value == ":" && $inputArray[$key+1] == ":" && $inputArray[$key+2] != ":") {
         array_splice($inputArray, $key+1, 1);
     }elseif ($value == ":" && $inputArray[$key+1] != ":" && $inputArray[$key-1] != ":") {
