@@ -1,6 +1,6 @@
 <?php
 //входные данные
-$inputString="a<b:c<d::e::f>>g";
+$inputString="aaaa<bbbb::cccc<dddd::eeee::ffff>>gggg";
 //разбиение строки на токены
 $inputArray=str_split ($inputString);
 
@@ -27,7 +27,7 @@ function inputValidation ($array, $string){
     }
     //дополнительная проверка входящей строки на корректность
     if(preg_match('/<::|<>|::>|::::/', $string) == 1){
-        throw new Exception('Error in input string. (one of [<::, <>, ::>, :::] DETECTED)');
+        throw new Exception('Error in input string. (one of [<::, <>, ::>, ::::] DETECTED)');
     }
 }
 try {
@@ -38,9 +38,6 @@ try {
 }
 
 //для упрощения разбора произведем предварительную замену символов :: на : 
-echo ("<br>");
-print_r ($inputArray);
-
 foreach ($inputArray as $key=>&$value){
     if ($value == ":" && $inputArray[$key+1] == ":" && $inputArray[$key+2] == ":"){
         $inputArray[$key-1]=$inputArray[$key-1].":";
@@ -55,8 +52,6 @@ foreach ($inputArray as $key=>&$value){
     }
 }
 unset($value);
-echo ("<br>");
-print_r ($inputArray);
 
 //разбиение строки на токены
 $tokens=[];
@@ -214,14 +209,22 @@ foreach ($tokens as $key=>$value){
     array_push($stack, $value);
     $stack=stackProduce($stack);
 }
+
 echo ("<br>-----tokens:--------------------<br>");
 print_r($tokens);
 echo ("<br>-----stack:--------------------<br>");
 print_r($stack);
 
-
+//после первого прохода в стеке остались только строки и массивы строк, которые нужно объединить, т.е.
 //проработанный стек нормализуется до двух элементов (дно стека и массив результатов)
 
 echo ("<br>-----stack (нормализованный):--------------------<br>");
+
+while(count($stack) > 2){
+    $stackPointer=count($stack)-1;
+    $stack[$stackPointer-1]= concat($stack[$stackPointer-1], $stack[$stackPointer]);
+    array_pop($stack);
+}
+
 print_r($stack);
 ?>
