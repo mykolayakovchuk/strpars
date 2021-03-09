@@ -1,8 +1,6 @@
 <?php
-//проблема в объединении  ::. когда А, (Б, В) : Г. Нужно сначала преобразовать (АБ, АВ) : Г
 //входные данные
-$inputString="a <b< c<d::i>::j>k::l>m  ";
-//$inputString="a <b <c::d >::i> j  ";
+$inputString="a <b< c<d::d2:::i>::j>k::l>m  ";
 //ВЫВОД ИСХОДНЫХ ДАННЫХ НА ЭКРАН
 echo ("<br>-----ВХОД:--------------------<br>");
 echo htmlspecialchars($inputString);
@@ -80,8 +78,7 @@ foreach ($inputArray as $key=>$value){
             break;
     }
 }
-echo "<br>";
-print_r($tokens);
+
 //Строка после разбиения на токены имеет вид:например $tokens=["<","a",":","b",":","с",":","d",">","e"];
 //функция анализа верхушки стека
 function stackProduce($array){
@@ -165,6 +162,8 @@ function orProd($array){
         if ($array[$i]!=":" && $array[$i+1]!=":"){
             $array[$i]=concat ($array[$i] , $array[$i+1]);
             array_splice($array, $i+1, 1);
+        } else {
+            continue;
         }
     }
         
@@ -228,8 +227,7 @@ foreach ($tokens as $key=>$value){
     array_push($stack, $value);
     $stack=stackProduce($stack);
 }
-echo "<br>";
-print_r($stack);
+
 //после первого прохода в стеке остались только строки и массивы строк, которые нужно объединить, т.е.
 //проработанный стек нормализуется до двух элементов (дно стека и массив результатов)
 while(count($stack) > 2){
