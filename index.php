@@ -1,6 +1,8 @@
 <?php
+//проблема в объединении  ::. когда А, (Б, В) : Г. Нужно сначала преобразовать (АБ, АВ) : Г
 //входные данные
-$inputString="aaaa<bbbb::cccc<dddd::eeee::ffff>>gggg";
+$inputString="a <b< c<d::i>::j>k::l>m  ";
+//$inputString="a <b <c::d >::i> j  ";
 //ВЫВОД ИСХОДНЫХ ДАННЫХ НА ЭКРАН
 echo ("<br>-----ВХОД:--------------------<br>");
 echo htmlspecialchars($inputString);
@@ -78,6 +80,8 @@ foreach ($inputArray as $key=>$value){
             break;
     }
 }
+echo "<br>";
+print_r($tokens);
 //Строка после разбиения на токены имеет вид:например $tokens=["<","a",":","b",":","с",":","d",">","e"];
 //функция анализа верхушки стека
 function stackProduce($array){
@@ -152,7 +156,19 @@ function concat ($element1, $element2){
 //функция произведения выражения < : >
 function orProd($array){
     array_pop($array);
-    while ($array[count($array)-2]!="<") {
+    //предварительная функция поиска и объединения значений не разделённых двоеточием
+    $stackPointerStart=count($array)-1;
+    do { 
+    $stackPointerStart--;
+    } while($array[$stackPointerStart]!="<");
+    for ($i=$stackPointerStart+1; $i<count($array)-1; $i++){
+        if ($array[$i]!=":" && $array[$i+1]!=":"){
+            $array[$i]=concat ($array[$i] , $array[$i+1]);
+            array_splice($array, $i+1, 1);
+        }
+    }
+        
+    while ($array[count($array)-2]!="<") {//основная функция преобразования 
         $stackPointer=count($array)-1;
         switch ($array[$stackPointer-1]){
             case ":":
@@ -212,7 +228,8 @@ foreach ($tokens as $key=>$value){
     array_push($stack, $value);
     $stack=stackProduce($stack);
 }
-
+echo "<br>";
+print_r($stack);
 //после первого прохода в стеке остались только строки и массивы строк, которые нужно объединить, т.е.
 //проработанный стек нормализуется до двух элементов (дно стека и массив результатов)
 while(count($stack) > 2){
